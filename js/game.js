@@ -114,8 +114,8 @@
     for (const h of M.houses) {
       if (!h.customer) continue;
       const s = new T.Sprite(new T.SpriteMaterial({ map: badge('📰'), depthWrite: false }));
-      s.scale.setScalar(1.5);
-      s.position.set(h.side * TU.mailbox.x, 1.9 * sc + 0.9, Z(h.s + TU.mailbox.ds));
+      s.scale.setScalar(1.9);
+      s.position.set(h.side * TU.mailbox.x, 1.9 * sc + 1.1, Z(h.s + TU.mailbox.ds));
       s.userData = { y: s.position.y, t: Math.random() * 6, done: 0 };
       g.add(s);
       day.markers[h.id] = s;
@@ -178,7 +178,7 @@
     w.s.position.set(x, y, Z(s));
     w.t = 0;
     w.life = o.life || 1.1;
-    w.size = (o.size || 1) * 3.6;
+    w.size = (o.size || 1) * 6;
     w.vy = o.vy != null ? o.vy : 1.4;
     return w;
   }
@@ -464,7 +464,7 @@
     signature(m, dt, c.t);
     m.ph += dt * 6;
     updateBall(m, dt);
-    if (c.confetti && Math.random() < dt * 5) confettiAt(c.x + (Math.random() - 0.5) * 8, 4 + Math.random() * 2, c.s + (Math.random() - 0.3) * 8, 16);
+    if (c.confetti && Math.random() < dt * 5) confettiAt(c.x + (Math.random() - 0.5) * 4, 2.6 + Math.random(), c.s + Math.random() * 4 - 1, 14);
   }
 
   // ---------------------------------------------------------------- events
@@ -586,26 +586,36 @@
     const r = { l: 8, r: w - 8, t: play ? (small ? 58 : 92) : 10, b: h - 8 };
     const kb = document.getElementById('kit-help-btn'); // the kit's ? button, with A文 and the speaker under it
     const kr = kb && kb.getBoundingClientRect();
-    if (kr && kr.width && w > h) r.l = Math.max(r.l, kr.right + 8);
+    if (kr && kr.width) r.l = Math.max(r.l, kr.right + 8);
     if (G.touch && play) {
       if (h > w) r.b = h - (small ? 150 : 190);
-      else { r.l = Math.max(r.l, small ? 150 : 190); r.r = w - (small ? 150 : 190); }
+      else { r.l = Math.max(r.l, small ? 200 : 236); r.r = w - (small ? 180 : 210); } // the pad (right of the kit's buttons) and the paper buttons
     }
     return r;
+  }
+  // the camera closes in on the rider at the end of a day, and on the winner on the results screen
+  function zoomNow() {
+    if (G.screen === 'results' && G.celebrate) return 0.17;
+    if (G.end && G.end.kind === 'end' && !G.demo) return Math.round((1 - 0.45 * Math.min(1, G.end.t / 1.2)) * 50) / 50;
+    return 1;
   }
   function fit() {
     const w = innerWidth || 800, h = innerHeight || 600;
     renderer.setSize(w, h, false);
-    G.fr = V.fit(camera, w, h, safeRect(w, h));
-    G.fitKey = w + 'x' + h + G.screen + G.touch;
+    const z = zoomNow();
+    let r = safeRect(w, h);
+    // on the results screen the winner stands in the corner left free by the words and buttons
+    if (z < 0.5 && G.screen === 'results') r = w > h ? { l: 0, r: w * 0.4, t: h * 0.3, b: h } : { l: 0, r: w, t: h * 0.66, b: h };
+    G.fr = V.fit(camera, w, h, r, z);
+    G.fitKey = w + 'x' + h + G.screen + G.touch + z;
     follow();
   }
-  function refit() { if (G.fitKey !== (innerWidth || 800) + 'x' + (innerHeight || 600) + G.screen + G.touch) fit(); }
+  function refit() { if (G.fitKey !== (innerWidth || 800) + 'x' + (innerHeight || 600) + G.screen + G.touch + zoomNow()) fit(); }
   function follow() {
     if (!G.fr) return;
     V.follow(camera, G.fr, G.camS);
     if (G.shake > 0) camera.position.x += (Math.random() - 0.5) * G.shake * 0.6;
-    const tz = camera.position.z - G.fr.base.z - V.AHEAD;
+    const tz = -G.camS - V.AHEAD;
     sun.position.set(-14, 30, tz + 16);
     sun.target.position.set(0, 0, tz);
     sun.target.updateMatrixWorld();
@@ -788,13 +798,13 @@
     $('keepBtn').classList.toggle('hidden', kind !== 'over');
     $('againBtn').textContent = 'PLAY AGAIN';
     // the winner does his signature move at the finish line, with confetti
-    G.celebrate = win ? { id: win.hero, x: 0, s: G.M ? G.M.end : 0, t: 0, confetti: true } : null;
+    G.celebrate = win ? { id: win.hero, x: 0, s: G.M ? G.M.end - 3.5 : 0, t: 0, confetti: true } : null; // before the finish arch, so it doesn't hide him
     if (win) {
       for (const k in riders) riders[k].g.visible = riders[k].shadow.visible = false;
       const m = rider('p:' + win.hero, win.hero);
       m.body.position.set(-0.2, 0.3, 0);
       m.b.bike.visible = true;
-      G.camS = G.celebrate.s - 6;
+      G.camS = G.celebrate.s;
       confettiAt(0, 4, G.celebrate.s, 100);
       SFX.win();
     } else SFX.over();
@@ -818,6 +828,7 @@
     startRide();
   }
   function startRide() {
+    $('toasts').textContent = '';
     G.demo = false;
     G.end = null;
     G.celebrate = null;
@@ -893,7 +904,7 @@
     const M = G.M;
     if (!M) return;
     if (G.screen === 'play') {
-      const inp = I.read(dt);
+      const inp = G.auto ? PR.Bot.decide(M) : I.read(dt); // game.autopilot(true): the autopilot rides (for screenshots)
       if (Sim.advance(M, dt, inp)) I.used();
       handleEvents(M);
       M.events.length = 0;
@@ -1074,6 +1085,7 @@
       return this.info();
     },
     hold(on = true) { G.hold = on; last = performance.now(); },
+    autopilot(on = true) { G.auto = on; },
     autoPause(on) { G.autoPause = on; },
     check: (o) => PR.Checks.all(o),
     prove: () => PR.Checks.prove(),

@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   const L = Kit.lang;
-  L.keep(['TEDDY', 'TOMMY', 'Claude Code']);
+  L.keep(['TEDDY', 'TOMMY', 'Claude Code', 'Esc']);
   const DAY = { MONDAY: '星期一', TUESDAY: '星期二', WEDNESDAY: '星期三', THURSDAY: '星期四', FRIDAY: '星期五', SATURDAY: '星期六', SUNDAY: '星期天' };
   const TREAT = { 'ICE CREAM': '冰淇淋', WATER: '水', 'JUICE BOX': '果汁', COOKIE: '饼干', WATERMELON: '西瓜', BANANA: '香蕉' };
   const WHY = {

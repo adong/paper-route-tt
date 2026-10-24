@@ -15,14 +15,15 @@
   }
   // fit: work out how far away the camera sits and how the picture is shifted so BOX fills `rect`
   // (the part of the screen the HUD, the kit's buttons and the touch controls leave free). Returns a framing.
-  function fit(cam, w, h, rect) {
+  // zoom < 1 frames a smaller patch around the bike (the celebrations at the finish line)
+  function fit(cam, w, h, rect, zoom = 1) {
     cam.fov = FOV;
     cam.aspect = w / h;
     cam.clearViewOffset();
     cam.near = 1;
     cam.far = 600;
     const d = dir();
-    const tgt = new THREE.Vector3(0, 0, -AHEAD);
+    const tgt = new THREE.Vector3(0, 0, -AHEAD * zoom);
     const place = (D) => {
       cam.position.set(tgt.x + d.x * D, tgt.y + d.y * D, tgt.z + d.z * D);
       cam.lookAt(tgt);
@@ -31,7 +32,7 @@
     };
     const measure = () => {
       const box = { l: 1e9, r: -1e9, t: 1e9, b: -1e9 };
-      for (const x of [BOX.x0, BOX.x1]) for (const s of [BOX.s0, BOX.s1]) for (const y of [0, 2.5]) {
+      for (const x of [BOX.x0 * zoom, BOX.x1 * zoom]) for (const s of [BOX.s0 * zoom, BOX.s1 * zoom]) for (const y of [0, 2.5 * Math.min(1, zoom * 2)]) {
         const v = new THREE.Vector3(x, y, -s).project(cam);
         const px = ((v.x + 1) / 2) * w, py = ((1 - v.y) / 2) * h;
         box.l = Math.min(box.l, px); box.r = Math.max(box.r, px); box.t = Math.min(box.t, py); box.b = Math.max(box.b, py);

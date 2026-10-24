@@ -283,6 +283,7 @@
   }
   function makeSkate() {
     const g = new T.Group();
+    g.scale.setScalar(1.35);
     const deck = box(0.95, 0.07, 0.3, M(['#ff5d8f', '#4dabf7', '#ffd43b'][Math.floor(Math.random() * 3)]), 0, 0.16, 0, g);
     box(0.7, 0.01, 0.2, M('#14121f'), 0, 0.2, 0, g, false);
     const wheels = [];
@@ -321,6 +322,7 @@
   }
   function makePuppy() {
     const g = new T.Group();
+    g.scale.setScalar(1.3);
     const body = new T.Group();
     g.add(body);
     const fur = M('#e9b872'), dark = M('#7a4a2b');
