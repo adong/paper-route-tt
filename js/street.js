@@ -62,7 +62,7 @@
       else if (kind === 'skate') obs.push({ kind, dir: side, s, x: -side * 6.6 });
       else if (kind === 'mower') obs.push({ kind, side, s0: s - 3, span: 6, x: side * 4.7, s: s - 3 });
       else if (kind === 'puppy') { obs.push({ kind, side, hx: side * 8.4, hs: ls - 0.6, x: side * 8.4, s: ls - 0.6 }); usedLots.add(lot * 2 + (side > 0 ? 1 : 0)); }
-      else if (kind === 'car') { obs.push({ kind, side, s: ls + 3.3, hx: side * 9.4, x: side * 9.4 }); usedLots.add(lot * 2 + (side > 0 ? 1 : 0)); }
+      else if (kind === 'car') { obs.push({ kind, side, s: ls + 3.6, hx: side * 9.4, x: side * 9.4 }); usedLots.add(lot * 2 + (side > 0 ? 1 : 0)); }
     }
     obs.forEach((o, i) => { o.i = i; o.st = 'idle'; o.t = 0; });
 

@@ -45,6 +45,7 @@
     const b = M.bike, D = M.D;
     if (b.st === 'tumble') {
       b.t += dt;
+      if (M.sab.stuckTumble) b.t = Math.min(b.t, 0.5); // the broken rule for the play check: he never gets up
       b.v = 0;
       b.lean = 0;
       if (b.t >= TU.tumbleT) {

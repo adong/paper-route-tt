@@ -10,7 +10,7 @@ PR.TUNE = {
   lots: 12, // houses on each side of the street
   lot0: 16, // where the first house is
   lotLen: 9, // each yard is this long
-  house: { front: 11, back: 16, half: 3, wall: 2.4, door: 0.8 }, // a house: |x| from front to back, s within ±half
+  house: { front: 11, back: 16, half: 2.5, wall: 2.4, door: 0.8 }, // a house: |x| from front to back, s within ±half
   mailbox: { x: 6.4, ds: -2.4, lo: 0.45, hi: 1.95 }, // on the lawn by the curb, a bit before the house
   mat: { x0: 9.7, x1: 10.95, ds: 0.8 }, // the doormat, in front of the door
   bin: { x: 6.8, ds: 2.0 }, // bonus cans and bins
